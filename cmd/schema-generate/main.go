@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/a-h/generate"
+	"github.com/jack-kelly/generate"
 )
 
 var (
@@ -16,6 +16,7 @@ var (
 	p                     = flag.String("p", "main", "The package that the structs are created in.")
 	i                     = flag.String("i", "", "A single file path (used for backwards compatibility).")
 	schemaKeyRequiredFlag = flag.Bool("schemaKeyRequired", false, "Allow input files with no $schema key.")
+	pointerPrimitivesFlag = flag.Bool("pointerPrimitives", false, "Use pointer types for optional privimitives.")
 )
 
 func main() {
@@ -63,5 +64,5 @@ func main() {
 		}
 	}
 
-	generate.Output(w, g, *p)
+	generate.Output(w, g, *p, *pointerPrimitivesFlag)
 }

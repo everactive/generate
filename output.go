@@ -31,7 +31,7 @@ func getOrderedStructNames(m map[string]Struct) []string {
 }
 
 // Output generates code and writes to w.
-func Output(w io.Writer, g *Generator, pkg string) {
+func Output(w io.Writer, g *Generator, pkg string, pointerPrimitives bool) {
 	structs := g.Structs
 	aliases := g.Aliases
 
@@ -43,14 +43,6 @@ func Output(w io.Writer, g *Generator, pkg string) {
 	// write list of imports into main output stream, followed by the code
 	codeBuf := new(bytes.Buffer)
 	imports := make(map[string]bool)
-
-	for _, k := range getOrderedStructNames(structs) {
-		s := structs[k]
-		if s.GenerateCode {
-			emitMarshalCode(codeBuf, s, imports)
-			emitUnmarshalCode(codeBuf, s, imports)
-		}
-	}
 
 	if len(imports) > 0 {
 		fmt.Fprintf(w, "\nimport (\n")
@@ -80,15 +72,21 @@ func Output(w io.Writer, g *Generator, pkg string) {
 
 			// Only apply omitempty if the field is not required.
 			omitempty := ",omitempty"
+			typePrefix := ""
 			if f.Required {
 				omitempty = ""
+			}
+			if !f.Required && pointerPrimitives {
+				if f.Type == "bool" || f.Type == "int" || f.Type == "string" || f.Type == "float64" {
+					typePrefix = "*"
+				}
 			}
 
 			if f.Description != "" {
 				outputFieldDescriptionComment(f.Description, w)
 			}
 
-			fmt.Fprintf(w, "  %s %s `json:\"%s%s\"`\n", f.Name, f.Type, f.JSONName, omitempty)
+			fmt.Fprintf(w, "  %s %s%s `json:\"%s%s\"`\n", f.Name, typePrefix, f.Type, f.JSONName, omitempty)
 		}
 
 		fmt.Fprintln(w, "}")
