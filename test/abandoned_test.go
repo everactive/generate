@@ -2,7 +2,7 @@ package test
 
 import (
 	"testing"
-	"github.com/a-h/generate/test/abandoned_gen"
+	"github.com/jack-kelly/generate/test/abandoned_gen"
 )
 
 func TestAbandoned(t *testing.T) {
