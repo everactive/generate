@@ -11,7 +11,7 @@ Generates Go (golang) Structs and Validation code from JSON schema.
 Install
 
 ```console
-$ go get -u github.com/jack-kelly/generate/...
+$ go get -u github.com/everactive/generate/...
 ```
 
 or
@@ -26,6 +26,17 @@ Run
 
 ```console
 $ schema-generate exampleschema.json
+```
+
+To specify an output file:
+
+```console
+$ schema-generate exampleschema.json -o example.go
+```
+
+To make primitive values that are optional to be pointers, use e.g.,
+```console
+schema-generate -pointerPrimitives -o sensor.go sensor_schema.json
 ```
 
 # Example

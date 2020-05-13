@@ -3,7 +3,7 @@ package test
 import (
 	"encoding/json"
 	"testing"
-	"github.com/jack-kelly/generate/test/example1_gen"
+	"github.com/everactive/generate/test/example1_gen"
 )
 
 func TestExample1(t *testing.T) {

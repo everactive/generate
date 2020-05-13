@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jack-kelly/generate/test/additionalProperties2_gen"
+	"github.com/everactive/generate/test/additionalProperties2_gen"
 )
 
 func TestMarshalUnmarshal(t *testing.T) {

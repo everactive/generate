@@ -2,7 +2,7 @@ package test
 
 import (
 	"testing"
-	gen "github.com/jack-kelly/generate/test/additionalPropertiesMarshal_gen"
+	gen "github.com/everactive/generate/test/additionalPropertiesMarshal_gen"
 	"encoding/json"
 	"reflect"
 )

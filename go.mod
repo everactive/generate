@@ -1,3 +1,3 @@
-module github.com/jack-kelly/generate
+module github.com/everactive/generate
 
 go 1.14

@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/jack-kelly/generate"
+	"github.com/everactive/generate"
 )
 
 var (
