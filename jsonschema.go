@@ -32,6 +32,8 @@ type Schema struct {
 	// http://json-schema.org/draft-07/json-schema-validation.html#rfc.section.9
 	Definitions map[string]*Schema
 
+	Defs map[string]*Schema `json:"$defs"` // from draft-2019_09 onwards
+
 	// Properties, Required and AdditionalProperties describe an object's child instances.
 	// http://json-schema.org/draft-07/json-schema-validation.html#rfc.section.6.5
 	Properties map[string]*Schema
@@ -232,6 +234,11 @@ func (schema *Schema) updatePathElements() {
 		d.updatePathElements()
 	}
 
+	for k, d := range schema.Defs {
+		d.PathElement = "$defs/" + k
+		d.updatePathElements()
+	}
+
 	for k, p := range schema.Properties {
 		p.PathElement = "properties/" + k
 		p.updatePathElements()
@@ -250,6 +257,12 @@ func (schema *Schema) updatePathElements() {
 
 func (schema *Schema) updateParentLinks() {
 	for k, d := range schema.Definitions {
+		d.JSONKey = k
+		d.Parent = schema
+		d.updateParentLinks()
+	}
+
+	for k, d := range schema.Defs {
 		d.JSONKey = k
 		d.Parent = schema
 		d.updateParentLinks()
@@ -278,6 +291,11 @@ func (schema *Schema) ensureSchemaKeyword() error {
 		return s.ensureSchemaKeyword()
 	}
 	for k, d := range schema.Definitions {
+		if err := check(k, d); err != nil {
+			return err
+		}
+	}
+	for k, d := range schema.Defs {
 		if err := check(k, d); err != nil {
 			return err
 		}

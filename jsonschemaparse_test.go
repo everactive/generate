@@ -2,6 +2,7 @@ package generate
 
 import (
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -164,4 +165,105 @@ func TestReturnedSchemaId(t *testing.T) {
 			t.Errorf("Test %d failed: For input \"%+v\", expected \"%s\", got \"%s\"", idx, test.input, test.expected, actual)
 		}
 	}
+}
+
+func TestThatDefsCanBeParsed(t *testing.T) {
+	s := `{
+  "$schema": "http://json-schema.org/schema#",
+  "$id": "https://example.com/defs-example.json",
+
+  "$defs": {
+    "temperature":{
+      "description": "An temperature value.",
+      "type": "number"
+    },
+    "humidity": {
+      "description": "A humidity value.",
+      "type": "number"
+    }
+  },
+  "type": "array",
+  "items": {
+    "title": "Sensor Data",
+    "description": "Sensor reading",
+    "type":"object",
+    "properties": {
+
+      "schema": {
+        "description": "The schema version of this packet",
+        "type": "string",
+        "const": "defs-example.json"
+      },
+
+      "timestamp": {
+        "description": "The time of the reading.",
+        "type": "string",
+        "format": "date-time"
+      },
+
+      "sensor": {
+        "title": "Sensor Data",
+        "description": "Data related to the sensor.",
+        "type": "object",
+
+        "properties": {
+          "metrics": {
+            "title": "Sensor Metrics",
+            "description": "Sensor-produced ",
+            "type": "object",
+            "properties": {
+              "humidity": {
+                "description": "Humidity",
+                "type": "number"
+              },
+              "temperature_0": {"$ref":"#/$defs/temperature"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "oneOf": [
+          {
+            "required": ["metrics"]
+          },
+          {
+            "required": ["metrics"]
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": ["schema", "timestamp", "sensor"],
+    "additionalProperties": false
+  }
+}
+`
+	so, err := Parse(s, &url.URL{Scheme: "file", Path: "jsonschemaparse_test.go"})
+
+	if err != nil {
+		t.Fatal("It was not possible to unmarshal the schema:", err)
+	}
+
+	if len(so.Defs) < 2 {
+		t.Fatal("Expected $defs to be populated with 2 references")
+	}
+
+	defsKeys:=[]string{"temperature", "humidity"}
+	for k, d := range so.Defs {
+		valid:=false
+		for _, v := range defsKeys {
+			if k == v {
+				valid=true
+			}
+		}
+		if !valid {
+			t.Fatal("unexpected reference: " + k)
+		}
+
+		if !strings.Contains(d.PathElement, "$defs") {
+			t.Fatal("expected reference path to contain the $defs prefix")
+		}
+	}
+
+
+
 }
