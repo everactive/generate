@@ -133,6 +133,14 @@ func (r *RefResolver) updateURIs(schema *Schema, baseURI url.URL, checkCurrentID
 		}
 		r.updateURIs(subSchema, newBaseURI, true, ignoreFragments)
 	}
+	for k, subSchema := range schema.Defs {
+		newBaseURI := baseURI
+		newBaseURI.Fragment += "/$defs/" + k
+		if err := r.InsertURI(newBaseURI.String(), subSchema); err != nil {
+			return err
+		}
+		r.updateURIs(subSchema, newBaseURI, true, ignoreFragments)
+	}
 	for k, subSchema := range schema.Properties {
 		newBaseURI := baseURI
 		newBaseURI.Fragment += "/properties/" + k
