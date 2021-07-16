@@ -3,6 +3,7 @@ package generate
 import (
 	"bytes"
 	"fmt"
+	"hash/fnv"
 	"io"
 	"sort"
 	"strings"
@@ -58,11 +59,16 @@ func Output(w io.Writer, g *Generator, pkg string, pointerPrimitives bool) {
 
 	if len(g.schemas) > 0 {
 		fmt.Fprintln(w, "\nconst (")
-		for index, schema := range g.schemas {
+		for _, schema := range g.schemas {
 			schemaIdParts := strings.Split(schema.ID(), "/")
 			schemaIdPartLength := len(schemaIdParts)
 			if schemaIdPartLength > 1 {
-				fmt.Fprintf(w, "    SchemaID%d", index)
+				hashMethod := fnv.New32a()
+				_, err := hashMethod.Write([]byte(schema.ID()))
+				if err != nil {
+					continue
+				}
+				fmt.Fprintf(w, "    SchemaID%d", hashMethod.Sum32())
 				fmt.Fprintf(w, " = \"%s\"\n", schemaIdParts[schemaIdPartLength-1])
 			}
 		}
