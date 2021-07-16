@@ -2,6 +2,8 @@
 
 Generates Go (golang) Structs and Validation code from JSON schema.
 
+Note: Currently each file processed should go into its own package otherwise the SchemaIDX field will conflict within the package.  This wasn't forseen when the latest changes were made.
+
 # Requirements
 
 * Go 1.8+
