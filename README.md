@@ -2,7 +2,7 @@
 
 Generates Go (golang) Structs and Validation code from JSON schema.
 
-Note: Currently each file processed should go into its own package otherwise the SchemaIDX field will conflict within the package.  This wasn't forseen when the latest changes were made.
+Note: A hash value is added to each generated file to make the id's unqiue when they are put in the resulting  output files to avoid conflicts.  There is a possibility of hashes colliding.
 
 # Requirements
 
